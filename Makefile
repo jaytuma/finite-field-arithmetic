@@ -7,7 +7,7 @@ OBJ_PATH = ./objects/
 all: lib_vec.exe
 
 lib_vec.exe: $(OBJ_PATH)lib_vec.o
-	gcc $(OBJ_PATH)lib_vec.o -o lib_vec.exe
+	gcc $(OBJ_PATH)lib_vec.o -o lib_vec.exe $(LIB)
 
 $(OBJ_PATH)lib_vec.o: lib_vec.c
 	gcc -c $(LIB) lib_vec.c -o $(OBJ_PATH)lib_vec.o
