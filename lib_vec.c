@@ -95,23 +95,17 @@ void _vec_mpz_decrease(vec_mpz_t vec)
 		MCR_mpz_set(vec -> data[vec -> len], num);						\
 		vec -> len ++;													\
 	}
-
-MCR_vec_mpz_append(vec_mpz_append, mpz_t, mpz_set);
-MCR_vec_mpz_append(vec_mpz_append_ui, unsigned long int, mpz_set_ui);
-MCR_vec_mpz_append(vec_mpz_append_si, signed long int, mpz_set_si);
-
-/*
-void vec_mpz_append(vec_mpz_t vec, mpz_t num)
-{
-	//check to verify that there is enough space
-	_vec_mpz_increase(vec);
-	mpz_init(vec -> data[vec -> len]);
-	mpz_set(vec -> data[vec -> len], num);
-	vec -> len ++;
-}
 /* Given a vector and a number, put it at the
  * end of the array
  */
+
+	//to append mpz_t
+MCR_vec_mpz_append(vec_mpz_append, mpz_t, mpz_set);
+	//to append unsigned integer
+MCR_vec_mpz_append(vec_mpz_append_ui, unsigned long int, mpz_set_ui);
+	//to append signed integer
+MCR_vec_mpz_append(vec_mpz_append_si, signed long int, mpz_set_si);
+
 
 void vec_mpz_get(mpz_t out, vec_mpz_t vec, int i)
 {
@@ -125,6 +119,23 @@ void vec_mpz_get(mpz_t out, vec_mpz_t vec, int i)
  * of the vector return the mpz in place i
  */
 
+#define MCR_vec_mpz_set(MCR_func_name, MCR_type, MCR_mpz_set)				\
+	void MCR_func_name(vec_mpz_t vec, int i, MCR_type num)					\
+	{																		\
+		MY_ASSERT(i < 0, "accessing vec_mpz with negative index!");			\
+		MY_ASSERT(i >= vec -> len, "accessing vec_mpz out of boundary!");	\
+																			\
+		MCR_mpz_set( (vec -> data)[i], num);								\
+	}
+/* Given a vector and an index i in the boundary
+ * set the vector value in place i to the mpz in input
+ */
+
+MCR_vec_mpz_set(vec_mpz_set,	mpz_t,				mpz_set);
+MCR_vec_mpz_set(vec_mpz_set_ui,	unsigned long int,	mpz_set_ui);
+MCR_vec_mpz_set(vec_mpz_set_si, signed long int,	mpz_set_si);
+
+
 void vec_mpz_set(vec_mpz_t vec, int i, mpz_t num)
 {
 	//sanity check in debug mode
@@ -133,9 +144,7 @@ void vec_mpz_set(vec_mpz_t vec, int i, mpz_t num)
 	
 	mpz_set( (vec -> data)[i], num);
 }
-/* Given a vector and an index i in the boundary
- * set the vector value in place i to the mpz in input
- */
+
 
 void vec_mpz_set_ui(vec_mpz_t vec, int i, unsigned int num)
 {
