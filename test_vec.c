@@ -109,8 +109,6 @@ int __vec_mpz_sig(int len)
 		vec_mpz_set_ui(vec, i, i*i);
 	}
 	
-	//printf("len = %d", vec_mpz_len(vec));
-	
 	for(i = 0; i < len; i++)
 	{
 		vec_mpz_get(tmp, vec, i);
@@ -124,7 +122,49 @@ int __vec_mpz_sig(int len)
 	vec_mpz_clear(&vec);
 	return 1;
 }
-/* test for 
+/* test for set, insert, get
+ */
+
+int __vec_mpz_osia(int len)
+{
+	vec_mpz_t vec;
+	vec_mpz_init(&vec);
+	
+	mpz_t tmp;
+	mpz_init(tmp);
+	
+	int i;
+	for(i = 0; i < len; i++)
+	{
+		vec_mpz_insert_si(vec, 2*i, 2*(i-len));
+		vec_mpz_append_si(vec, 2*(i-len)+1);
+	}
+	for(i = 0; i < len; i++)
+	{
+		vec_mpz_insert_ui(vec, 2*(len + i), 2*i);
+		vec_mpz_append_ui(vec, 2*i + 1);
+	}
+	
+	for(i = 0; i < 2*len; i++)
+	{
+		vec_mpz_get(tmp, vec, i);
+		if(mpz_cmp_si(tmp, i - 2*len) != 0)
+		{
+			return -1;	
+		}
+	}
+	
+	for(i = 0; i < 2*len; i++)
+	{
+		vec_mpz_get(tmp, vec, 2*len + i);
+		if(mpz_cmp_ui(tmp, i) != 0)
+		{
+			return -1;	
+		}
+	}
+	
+	return 1;
+}
 	
 
 
@@ -134,12 +174,16 @@ int __vec_mpz_sig(int len)
 
 int main()
 {
+	MCR_test_iteration_display(__vec_mpz_osia(5000000), 1, \
+							   "set/insert/append test", "dio", stdout);
+	
 	//rintf("test = %d", __vec_mpz_pop_append(1000));
-	MCR_test_iteration_display(__vec_mpz_pag(10000), 100,\
+	MCR_test_iteration_display(__vec_mpz_pag(5000), 100,\
 							   "pop/append/get test", "", stdout);
 
 	MCR_test_iteration_display(__vec_mpz_sig(100000), 100,\
 							   "set/insert/get test", "", stdout);
+	
 }
 
 

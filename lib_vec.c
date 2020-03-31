@@ -58,13 +58,6 @@ void _vec_mpz_decrease(vec_mpz_t vec)
 
 //specific function
 
-int vec_mpz_len(vec_mpz_t vec)
-{
-	return vec -> len;	
-}
-/* Return the lenght of the current vector (not the size!)
- */
-
 #define MCR_vec_mpz_append(MCR_func_name, MCR_type, MCR_mpz_set)		\
 	void MCR_func_name(vec_mpz_t vec, MCR_type num)						\
 	{																	\
@@ -100,8 +93,8 @@ void vec_mpz_get(mpz_t out, vec_mpz_t vec, int i)
 #define MCR_vec_mpz_set(MCR_func_name, MCR_type, MCR_mpz_set)								\
 	void MCR_func_name(vec_mpz_t vec, int i, MCR_type num)									\
 	{																						\
-		MY_ASSERT(i >= 0, "accessing in vec_mpz_set* vec_mpz with negative index!");		\
-		MY_ASSERT(i < vec -> len, "accessing in vec_mpz_set* vec_mpz out of boundary!");	\
+		MY_ASSERT(i >= 0, "accessing in MCR_func_name vec_mpz with negative index!");		\
+		MY_ASSERT(i < vec -> len, "accessing in MCR_func_name vec_mpz out of boundary!");	\
 																							\
 		MCR_mpz_set( (vec -> data)[i], num);												\
 	}
@@ -168,25 +161,6 @@ MCR_vec_mpz_insert(vec_mpz_insert,		mpz_t,				mpz_set);
 MCR_vec_mpz_insert(vec_mpz_insert_ui,	unsigned long int,	mpz_set_ui);
 MCR_vec_mpz_insert(vec_mpz_insert_si,	signed long int,	mpz_set_si);
 
-/*
-void vec_mpz_insert(vec_mpz_t vec, int i, mpz_t num)
-{
-	MY_ASSERT(i >= 0, "accessing in vec_mpz_insert vec_mpz with negative index");
-	MY_ASSERT(i <= vec -> len, "accessing in vec_mpz_insert vec_mpz out of boundary");
-	
-	//incremento la lunghezza di uno e alloco un nuovo intero
-	vec -> len ++;
-	_vec_mpz_increase(vec);
-	mpz_init(vec -> data[(vec -> len) - 1]);
-	
-	int j;
-	for(j = (vec -> len) - 2; j >= i; j--)
-	{
-		mpz_swap(vec -> data[j+1], vec -> data[j]);		
-	}
-	
-	mpz_set(vec -> data[i], num);
-}*/
 /*  Given a vector, index i, mpz_t inset the element num at
  *  position i, incrementing by one the position of elements
  *  that wera at a position grater that i
@@ -279,6 +253,11 @@ void vec_mpz_print(vec_mpz_t vec)
 	char str[65536];
 	vec_mpz_string(str, vec);
 	printf("vec = %s\nlen = %d,\tsize = %d\n\n", str, vec -> len, vec -> size);
+}
+
+int vec_mpz_typecheck(vec_mpz_t vec)
+{
+	return 1;
 }
 
 // - - - no main - - - //

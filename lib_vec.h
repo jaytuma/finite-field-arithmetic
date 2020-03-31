@@ -60,3 +60,24 @@ void vec_mpz_reverse(vec_mpz_t vec);
 void vec_mpz_string(char* out, vec_mpz_t vec);
 
 void vec_mpz_print(vec_mpz_t vec);
+	
+	//Debug Use Only
+
+int vec_mpz_typecheck(vec_mpz_t vec);
+
+	// - - - - M a c r o z - - - - //
+
+#ifdef DEBUG
+#define vec_mpz_len(vec)												\
+	(vec -> len)*(vec_mpz_typecheck(vec))									
+#else
+#define vec_mpz_len(vec)												\
+	(vec -> len)
+#endif
+/* Return the lenght of the current vector (not the size!)
+ *  	now it's a macro for optimization, and in debug mode
+ *		will still return a warning if wrong input type
+ */
+
+
+
