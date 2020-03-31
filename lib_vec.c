@@ -1,41 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <gmp.h>
-
-#define INITIAL_MEMORY 2
-
-#define ERROR "\n\t\e[1;31mError\e[0m:"
-
-#define DEBUG 1
-
-/*the following macro should not be here but in a different file*/
-#ifdef DEBUG
-	#define MY_ASSERT(b, s) 								\
-			if(!(b))										\
-			{												\
-				fprintf(stderr, "%s %s!\n", ERROR, s);	\
-				fflush(stderr);								\
-			}										
-#else
-	#define MY_ASSERT(b,s);
-#endif
-
+#include "lib_vec.h"
 
 // - - vector data structure - - //
-/* holds an dynamically allocated vector of mpz
+/* holds a dynamically allocated vector of mpz
 
 /* the data structure need to be initialized through a pointer
  * from that moment on the vector is a pointer to _vec_t and 
  * values can be modified without passing a pointer.
  */	
-
-typedef struct _vec_mpz_t
-{
-	int len;
-	int size;
-	mpz_t* data;
-} *vec_mpz_t;
 
 void vec_mpz_init(vec_mpz_t* vec_pt)
 {
@@ -161,7 +132,7 @@ void vec_mpz_pop(mpz_t out, vec_mpz_t vec, int i)
 	int j;
 	for(j = i; j < (vec -> len) - 1; j++)
 	{	
-		mpz_set(vec -> data[j], vec -> data[j+1]);
+		mpz_swap(vec -> data[j], vec -> data[j+1]);
 	}
 	mpz_clear(vec -> data[vec -> len - 1]);
 	
@@ -174,6 +145,30 @@ void vec_mpz_pop(mpz_t out, vec_mpz_t vec, int i)
  *	entries
  */
 
+#define MCR_vec_mpz_insert(MRC_func_name, MCR_type, MCR_mpz_set)								\
+	void MRC_func_name(vec_mpz_t vec, int i, MCR_type num)										\
+	{																							\
+		MY_ASSERT(i >= 0, "accessing in MRC_func_name vec_mpz with negative index");			\
+		MY_ASSERT(i <= vec -> len, "accessing in MRC_func_name vec_mpz out of boundary");		\
+																								\
+		vec -> len ++;																			\
+		_vec_mpz_increase(vec);																	\
+		mpz_init(vec -> data[(vec -> len) - 1]);												\
+																								\
+		int j;																					\
+		for(j = (vec -> len) - 2; j >= i; j--)													\
+		{																						\
+			mpz_swap(vec -> data[j+1], vec -> data[j]);											\
+		}																						\
+																								\
+		MCR_mpz_set(vec -> data[i], num);														\
+	}																							
+
+MCR_vec_mpz_insert(vec_mpz_insert,		mpz_t,				mpz_set);
+MCR_vec_mpz_insert(vec_mpz_insert_ui,	unsigned long int,	mpz_set_ui);
+MCR_vec_mpz_insert(vec_mpz_insert_si,	signed long int,	mpz_set_si);
+
+/*
 void vec_mpz_insert(vec_mpz_t vec, int i, mpz_t num)
 {
 	MY_ASSERT(i >= 0, "accessing in vec_mpz_insert vec_mpz with negative index");
@@ -187,11 +182,11 @@ void vec_mpz_insert(vec_mpz_t vec, int i, mpz_t num)
 	int j;
 	for(j = (vec -> len) - 2; j >= i; j--)
 	{
-		mpz_set(vec -> data[j+1], vec -> data[j]);		
+		mpz_swap(vec -> data[j+1], vec -> data[j]);		
 	}
 	
 	mpz_set(vec -> data[i], num);
-}
+}*/
 /*  Given a vector, index i, mpz_t inset the element num at
  *  position i, incrementing by one the position of elements
  *  that wera at a position grater that i
@@ -199,8 +194,52 @@ void vec_mpz_insert(vec_mpz_t vec, int i, mpz_t num)
 
 int vec_mpz_count(vec_mpz_t vec, mpz_t num)
 {
+	int i, cnt = 0;
+	for(i = 0; i < vec -> len; i++)
+	{
+		if(mpz_cmp(vec -> data[i], num) == 0)
+		{
+			cnt ++;
+		}
+	}
 	
+	return cnt;
 }
+/* Count the number of elements equal to the given mpz num
+ * occurring in vec
+ */
+
+int vec_mpz_index(vec_mpz_t vec, mpz_t num)
+{
+	int i;
+	while((mpz_cmp(vec -> data[i], num) != 0) && (i < vec -> len))
+	{
+		i++;	
+	}
+	
+	if(mpz_cmp(vec -> data[i], num) == 0)
+	{
+		return i;	
+	}
+	else
+	{
+		return -1;
+	}
+}
+/* look for the first occurrence of num in vec. If there is no
+ * occurrence will return a negative value (-1)
+ */
+	
+void vec_mpz_reverse(vec_mpz_t vec)
+{
+	int i, n = vec -> len;
+	for(i = 0; i < n/2; i++);
+	{
+		mpz_swap(vec -> data[i], vec -> data[n - i - 1]);	
+	}
+}
+/* reverse the order of the vector
+ */
 
 	
 	
@@ -242,32 +281,4 @@ void vec_mpz_print(vec_mpz_t vec)
 	printf("vec = %s\nlen = %d,\tsize = %d\n\n", str, vec -> len, vec -> size);
 }
 
-int main()
-{
-	char* str = malloc(sizeof(char)*16000);
-	vec_mpz_t vec;
-	mpz_t tmp;
-	signed long int i, j;
-	
-	vec_mpz_init(&vec);
-	mpz_init(tmp);	
-	
-	for(i = 0; i < 1000; i++)
-	{
-		mpz_set_ui(tmp, i);
-		vec_mpz_insert(vec, i, tmp);
-	}
-	vec_mpz_print(vec);
-	
-	for(i = 0; i < 500; i++)
-	{
-		vec_mpz_pop(NULL, vec, i);	
-	}
-	vec_mpz_print(vec);
-	
-	for(i = 0; i < vec -> len; i++)
-	{
-		vec_mpz_set_ui(vec, i, 42);	
-	}
-	vec_mpz_print(vec);
-}
+// - - - no main - - - //
