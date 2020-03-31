@@ -87,6 +87,13 @@ void _vec_mpz_decrease(vec_mpz_t vec)
 
 //specific function
 
+int vec_mpz_len(vec_mpz_t vec)
+{
+	return vec -> len;	
+}
+/* Return the lenght of the current vector (not the size!)
+ */
+
 #define MCR_vec_mpz_append(MCR_func_name, MCR_type, MCR_mpz_set)		\
 	void MCR_func_name(vec_mpz_t vec, MCR_type num)						\
 	{																	\
@@ -100,18 +107,18 @@ void _vec_mpz_decrease(vec_mpz_t vec)
  */
 
 	//to append mpz_t
-MCR_vec_mpz_append(vec_mpz_append, mpz_t, mpz_set);
+MCR_vec_mpz_append(vec_mpz_append, 		mpz_t, 				mpz_set);
 	//to append unsigned integer
-MCR_vec_mpz_append(vec_mpz_append_ui, unsigned long int, mpz_set_ui);
+MCR_vec_mpz_append(vec_mpz_append_ui,	unsigned long int, 	mpz_set_ui);
 	//to append signed integer
-MCR_vec_mpz_append(vec_mpz_append_si, signed long int, mpz_set_si);
+MCR_vec_mpz_append(vec_mpz_append_si, 	signed long int, 	mpz_set_si);
 
 
 void vec_mpz_get(mpz_t out, vec_mpz_t vec, int i)
 {
 	//sanity check in debug mode
-	MY_ASSERT(i >= 0, "accessing vec_mpz with negative index");
-	MY_ASSERT(i < vec -> len, "accessing vec_mpz out of boundary");
+	MY_ASSERT(i >= 0, "accessing in vec_mpz_get vec_mpz with negative index");
+	MY_ASSERT(i < vec -> len, "accessing in vec_mpz_get vec_mpz out of boundary");
 	
 	mpz_set( out, (vec -> data)[i] );
 }
@@ -119,45 +126,30 @@ void vec_mpz_get(mpz_t out, vec_mpz_t vec, int i)
  * of the vector return the mpz in place i
  */
 
-#define MCR_vec_mpz_set(MCR_func_name, MCR_type, MCR_mpz_set)				\
-	void MCR_func_name(vec_mpz_t vec, int i, MCR_type num)					\
-	{																		\
-		MY_ASSERT(i < 0, "accessing vec_mpz with negative index!");			\
-		MY_ASSERT(i >= vec -> len, "accessing vec_mpz out of boundary!");	\
-																			\
-		MCR_mpz_set( (vec -> data)[i], num);								\
+#define MCR_vec_mpz_set(MCR_func_name, MCR_type, MCR_mpz_set)								\
+	void MCR_func_name(vec_mpz_t vec, int i, MCR_type num)									\
+	{																						\
+		MY_ASSERT(i >= 0, "accessing in vec_mpz_set* vec_mpz with negative index!");		\
+		MY_ASSERT(i < vec -> len, "accessing in vec_mpz_set* vec_mpz out of boundary!");	\
+																							\
+		MCR_mpz_set( (vec -> data)[i], num);												\
 	}
 /* Given a vector and an index i in the boundary
  * set the vector value in place i to the mpz in input
  */
 
+	//to set a mpz_t
 MCR_vec_mpz_set(vec_mpz_set,	mpz_t,				mpz_set);
+	//to set an unsigned integer
 MCR_vec_mpz_set(vec_mpz_set_ui,	unsigned long int,	mpz_set_ui);
+	//to set an unsigned integer
 MCR_vec_mpz_set(vec_mpz_set_si, signed long int,	mpz_set_si);
 
 
-void vec_mpz_set(vec_mpz_t vec, int i, mpz_t num)
-{
-	//sanity check in debug mode
-	MY_ASSERT(i < 0, "accessing vec_mpz with negative index!");
-	MY_ASSERT(i >= vec -> len, "accessing vec_mpz out of boundary!");
-	
-	mpz_set( (vec -> data)[i], num);
-}
-
-
-void vec_mpz_set_ui(vec_mpz_t vec, int i, unsigned int num)
-{
-	MY_ASSERT(i >= 0, "accessing vec_mpz with negative index");
-	MY_ASSERT(i < vec -> len, "accessing vec_mpz out of boundary");
-	
-	mpz_set_ui( (vec -> data)[i], num);
-}
-
 void vec_mpz_pop(mpz_t out, vec_mpz_t vec, int i)
 {
-	MY_ASSERT(i >= 0, "accessing vec_mpz with negative index");
-	MY_ASSERT(i < vec -> len, "accessing vec_mpz out of boundary");
+	MY_ASSERT(i >= 0, "accessing in vec_mpz_pop vec_mpz with negative index");
+	MY_ASSERT(i < vec -> len, "accessing in vec_mpz_pop vec_mpz out of boundary");
 	
 	//in case one don't want to save the output data
 	if(out != NULL)
@@ -168,10 +160,7 @@ void vec_mpz_pop(mpz_t out, vec_mpz_t vec, int i)
 	//Todo, Warning, bad implementation, too expensive.
 	int j;
 	for(j = i; j < (vec -> len) - 1; j++)
-	{
-			
-			//gmp_printf("\tj = %d,\tvec[%d] = %Zd,\tvec[%d] = %Zd\n", j, j, vec -> data[j], j+1, vec -> data[j+1]);
-			
+	{	
 		mpz_set(vec -> data[j], vec -> data[j+1]);
 	}
 	mpz_clear(vec -> data[vec -> len - 1]);
@@ -180,9 +169,38 @@ void vec_mpz_pop(mpz_t out, vec_mpz_t vec, int i)
 	vec -> len --;
 	_vec_mpz_decrease(vec);
 }
-/* 
- * 
+/*	Given a vector and an index, it write on out the value
+ * 	held in position i, remove the i-th entry and shift the other
+ *	entries
  */
+
+void vec_mpz_insert(vec_mpz_t vec, int i, mpz_t num)
+{
+	MY_ASSERT(i >= 0, "accessing in vec_mpz_insert vec_mpz with negative index");
+	MY_ASSERT(i <= vec -> len, "accessing in vec_mpz_insert vec_mpz out of boundary");
+	
+	//incremento la lunghezza di uno e alloco un nuovo intero
+	vec -> len ++;
+	_vec_mpz_increase(vec);
+	mpz_init(vec -> data[(vec -> len) - 1]);
+	
+	int j;
+	for(j = (vec -> len) - 2; j >= i; j--)
+	{
+		mpz_set(vec -> data[j+1], vec -> data[j]);		
+	}
+	
+	mpz_set(vec -> data[i], num);
+}
+/*  Given a vector, index i, mpz_t inset the element num at
+ *  position i, incrementing by one the position of elements
+ *  that wera at a position grater that i
+ */
+
+int vec_mpz_count(vec_mpz_t vec, mpz_t num)
+{
+	
+}
 
 	
 	
@@ -219,14 +237,14 @@ void vec_mpz_string(char* out, vec_mpz_t vec)
 
 void vec_mpz_print(vec_mpz_t vec)
 {
-	char str[1024];
+	char str[65536];
 	vec_mpz_string(str, vec);
 	printf("vec = %s\nlen = %d,\tsize = %d\n\n", str, vec -> len, vec -> size);
 }
 
 int main()
 {
-	char* str = malloc(sizeof(char)*1024);
+	char* str = malloc(sizeof(char)*16000);
 	vec_mpz_t vec;
 	mpz_t tmp;
 	signed long int i, j;
@@ -234,11 +252,22 @@ int main()
 	vec_mpz_init(&vec);
 	mpz_init(tmp);	
 	
-	for(i = 0; i < 11; i++)
+	for(i = 0; i < 1000; i++)
 	{
 		mpz_set_ui(tmp, i);
-		vec_mpz_append_si(vec, tmp);
+		vec_mpz_insert(vec, i, tmp);
 	}
+	vec_mpz_print(vec);
 	
+	for(i = 0; i < 500; i++)
+	{
+		vec_mpz_pop(NULL, vec, i);	
+	}
+	vec_mpz_print(vec);
+	
+	for(i = 0; i < vec -> len; i++)
+	{
+		vec_mpz_set_ui(vec, i, 42);	
+	}
 	vec_mpz_print(vec);
 }
