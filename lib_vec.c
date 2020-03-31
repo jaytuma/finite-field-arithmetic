@@ -87,6 +87,20 @@ void _vec_mpz_decrease(vec_mpz_t vec)
 
 //specific function
 
+#define MCR_vec_mpz_append(MCR_func_name, MCR_type, MCR_mpz_set)		\
+	void MCR_func_name(vec_mpz_t vec, MCR_type num)						\
+	{																	\
+		_vec_mpz_increase(vec);											\
+		mpz_init(vec -> data[vec -> len]);								\
+		MCR_mpz_set(vec -> data[vec -> len], num);						\
+		vec -> len ++;													\
+	}
+
+MCR_vec_mpz_append(vec_mpz_append, mpz_t, mpz_set);
+MCR_vec_mpz_append(vec_mpz_append_ui, unsigned long int, mpz_set_ui);
+MCR_vec_mpz_append(vec_mpz_append_si, signed long int, mpz_set_si);
+
+/*
 void vec_mpz_append(vec_mpz_t vec, mpz_t num)
 {
 	//check to verify that there is enough space
@@ -206,29 +220,16 @@ int main()
 	char* str = malloc(sizeof(char)*1024);
 	vec_mpz_t vec;
 	mpz_t tmp;
-	int i, j;
+	signed long int i, j;
 	
 	vec_mpz_init(&vec);
 	mpz_init(tmp);	
 	
-	for(j = 0; j < 100; j++)
+	for(i = 0; i < 11; i++)
 	{
-		for(i = 0; i < 10000; i++)
-		{
-			mpz_set_ui(tmp, i);
-			vec_mpz_append(vec, tmp);
-			//vec_mpz_print(vec);
-		}
-
-		for(i = 0; i < 5000; i++)
-		{
-			vec_mpz_pop(NULL, vec, i);
-			//vec_mpz_print(vec);
-		}
-		for(i = 0; i < 5000; i++)
-		{
-			vec_mpz_pop(NULL, vec, 0);
-			//vec_mpz_print(vec);
-		}
+		mpz_set_ui(tmp, i);
+		vec_mpz_append_si(vec, tmp);
 	}
+	
+	vec_mpz_print(vec);
 }
