@@ -144,8 +144,8 @@ void vec_mpz_pop(mpz_t out, vec_mpz_t vec, int i)
 		MY_ASSERT(i >= 0, "accessing in MRC_func_name vec_mpz with negative index");			\
 		MY_ASSERT(i <= vec -> len, "accessing in MRC_func_name vec_mpz out of boundary");		\
 																								\
-		vec -> len ++;																			\
 		_vec_mpz_increase(vec);																	\
+		vec -> len ++;																			\
 		mpz_init(vec -> data[(vec -> len) - 1]);												\
 																								\
 		int j;																					\
@@ -215,9 +215,7 @@ void vec_mpz_reverse(vec_mpz_t vec)
 /* reverse the order of the vector
  */
 
-	
-	
-// - - - debug use only - - -
+	// - - - I/O - - - 
 
 void vec_mpz_string(char* out, vec_mpz_t vec)
 {
@@ -255,9 +253,16 @@ void vec_mpz_print(vec_mpz_t vec)
 	printf("vec = %s\nlen = %d,\tsize = %d\n\n", str, vec -> len, vec -> size);
 }
 
-int vec_mpz_typecheck(vec_mpz_t vec)
+// - - - debug use only - - - (not sure if this should stay here...)
+
+int _vec_mpz_typecheck(vec_mpz_t vec)
 {
 	return 1;
+}
+
+int _int_typecheck(int n)
+{
+	return 1;	
 }
 
 // - - - no main - - - //
