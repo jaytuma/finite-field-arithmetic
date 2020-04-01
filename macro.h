@@ -12,3 +12,5 @@
 #else
 	#define MY_ASSERT(b,s);
 #endif
+
+#define MCR_COMMENT(txt)  
