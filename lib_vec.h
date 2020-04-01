@@ -63,21 +63,44 @@ void vec_mpz_print(vec_mpz_t vec);
 	
 	//Debug Use Only
 
-int vec_mpz_typecheck(vec_mpz_t vec);
+int _vec_mpz_typecheck(vec_mpz_t vec);
+int _int_typecheck(int i);
 
 	// - - - - M a c r o z - - - - //
 
+	/*vec_mpz_len(vec_mpz_t) - with type check*/
 #ifdef DEBUG
-#define vec_mpz_len(vec)												\
-	(vec -> len)*(vec_mpz_typecheck(vec))									
+#define vec_mpz_len(MCR_vec)												\
+	((_vec_mpz_typecheck(MCR_vec)) ? (MCR_vec -> len) : (0) )							
 #else
-#define vec_mpz_len(vec)												\
-	(vec -> len)
+#define vec_mpz_len(MCR_vec)												\
+	(MCR_vec -> len)
 #endif
 /* Return the lenght of the current vector (not the size!)
  *  	now it's a macro for optimization, and in debug mode
- *		will still return a warning if wrong input type
+ *		will still return a warning if wrong input type.
+ *		
+ *		the general idea for this complier-time type checking
+ *		is to pass the arguments to a function that returns 1
+ *		therefore compiler will check the input type and if
+ *		correct, the ternary operator returns the first option
  */
+
+	/*vec_mpz_access(vec_mpz_t, int) - with type check*/
+#ifdef DEBUG
+#define vec_mpz_access(MCR_vec, MCR_i)															\
+	((_vec_mpz_typecheck(MCR_vec) * _int_typecheck(MCR_i)) ? (MCR_vec -> data[MCR_i]) : (0))	
+#else
+#define vec_mpz_access(MCR_vec, MCR_i)															\
+	(MCR_vec -> data[MCR_i])
+#endif
+/* Return an mpz_t. Never use this function in asignment (get
+ * 		and set should be used instead). The purpose of this macro
+ *		is to access elements when they are needed as argument of
+ *		a function without the need to copy them first.
+ */
+
+
 
 
 
