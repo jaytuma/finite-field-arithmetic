@@ -25,8 +25,6 @@ void _vec_mpz_decrease(vec_mpz_t vec);
 
 	//main functions
 
-int vec_mpz_len(vec_mpz_t vec);
-
 	/*from macro expansion*/
 void vec_mpz_append(vec_mpz_t vec, mpz_t);
 void vec_mpz_append_ui(vec_mpz_t vec, unsigned long int num);
