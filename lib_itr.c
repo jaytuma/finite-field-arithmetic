@@ -166,7 +166,7 @@ void itr_mpz_get_key(int* key_pt, itr_mpz_t list)
 		MY_ASSERT(list -> first != NULL, "trying to set data of a list with NULL initial data pointer");		\
 		MY_ASSERT(list -> seek != NULL, "trying to set data of a list with NULL seek data pointer");			\
 																												\
-		MCR_mpz_set((list -> seek) -> data, num);																	\
+		MCR_mpz_set((list -> seek) -> data, num);																\
 	}
 
 MCR_itr_mpz_set(itr_mpz_set,	mpz_t,				mpz_set);
@@ -193,81 +193,95 @@ void itr_mpz_set_key(itr_mpz_t list, int new_key)
  * 	WARNING: requires non-empty iterator
  */
 
-void itr_mpz_append(itr_mpz_t list, int key, mpz_t num)
-{
-	itr_node_mpz_t node;
-	itr_node_mpz_init(&node);
-	
-	node -> key = key;
-	mpz_set(node -> data, num); //to parametrize through a macro!
-	
-	if(list -> len == 0)
-	{
-		MY_ASSERT(list -> first == NULL, "empty list with non NULL initial data pointer");
-		MY_ASSERT(list -> seek == NULL, "empty list with non NULL seek data pointer");
-		
-		node -> prev = node;
-		node -> next = node;
-		
-		list -> first = node;
-		list -> seek = node;
-		
-		list -> len ++;
+#define MCR_itr_mpz_append(MCR_func_name, MCR_type, MCR_mpz_set)								\
+	void MCR_func_name(itr_mpz_t list, int key, MCR_type num)									\
+	{																							\
+		itr_node_mpz_t node;																	\
+		itr_node_mpz_init(&node);																\
+																								\
+		node -> key = key;																		\
+		MCR_mpz_set(node -> data, num); 														\
+																								\
+		if(list -> len == 0)																	\
+		{																						\
+			MY_ASSERT(list -> first == NULL, "empty list with non NULL initial data pointer");	\
+			MY_ASSERT(list -> seek == NULL, "empty list with non NULL seek data pointer");		\
+																								\
+			node -> prev = node;																\
+			node -> next = node;																\
+																								\
+			list -> first = node;																\
+			list -> seek = node;																\
+																								\
+			list -> len ++;																		\
+		}																						\
+		else																					\
+		{																						\
+			MY_ASSERT(list -> first != NULL, "non empty list with NULL initial data pointer");	\
+			MY_ASSERT(list -> seek != NULL, "non empty list with NULL seek data pointer");		\
+																								\
+				MCR_COMMENT(the order is extremely importart)									\
+																								\
+			((list -> first) -> prev) -> next = node;											\
+			node -> prev = (list -> first) -> prev;												\
+			node -> next = list -> first;														\
+			(list -> first) -> prev = node;														\
+																								\
+			list -> len ++;																		\
+		}																						\
 	}
-	else
-	{
-		MY_ASSERT(list -> first != NULL, "non empty list with NULL initial data pointer");
-		MY_ASSERT(list -> seek != NULL, "non empty list with NULL seek data pointer");
-		
-		/*the order is extremely importart*/
-		((list -> first) -> prev) -> next = node;
-		node -> prev = (list -> first) -> prev;
-		node -> next = list -> first;
-		(list -> first) -> prev = node;
-		
-		list -> len ++;
-	}
-}
+
+MCR_itr_mpz_append(itr_mpz_append,		mpz_t,				mpz_set);
+MCR_itr_mpz_append(itr_mpz_append_ui,	unsigned long int,	mpz_set_ui);
+MCR_itr_mpz_append(itr_mpz_append_si,	signed long int,	mpz_set_si);
+
 /* Create a node at the end of the iterator's list
  * i.e. before the first element with given key and value
  */
 
-void itr_mpz_insert(itr_mpz_t list, int key, mpz_t num)
-{
-	itr_node_mpz_t node;
-	itr_node_mpz_init(&node);
-	
-	node -> key = key;
-	mpz_set(node -> data, num); //to parametrize through a macro!
-	
-	if(list -> len == 0)
-	{
-		MY_ASSERT(list -> first == NULL, "empty list with non NULL initial data pointer");
-		MY_ASSERT(list -> seek == NULL, "empty list with non NULL seek data pointer");
-		
-		node -> next = node;
-		node -> prev = node;
-		
-		list -> first = node;
-		list -> seek = node;
-		
-		list -> len ++;
-	}
-	else
-	{
-		MY_ASSERT(list -> first != NULL, "non empty list with NULL initial data pointer");
-		MY_ASSERT(list -> seek != NULL, "non empty list with NULL seek data pointer");
-		
-		/*the order is extremely important*/
-		((list -> seek) -> next) -> prev = node;
-		node -> next = (list -> seek) -> next;
-		node -> prev = list -> seek;
-		(list -> seek) -> next = node;
-		list -> seek = node;
-		
-		list -> len ++;
-	}
-}
+#define MCR_itr_mpz_insert(MCR_func_name, MCR_type, MCR_mpz_set)									\
+	void MCR_func_name(itr_mpz_t list, int key, MCR_type num)										\
+	{																								\
+		itr_node_mpz_t node;																		\
+		itr_node_mpz_init(&node);																	\
+																									\
+		node -> key = key;																			\
+		MCR_mpz_set(node -> data, num);																\
+																									\
+		if(list -> len == 0)																		\
+		{																							\
+			MY_ASSERT(list -> first == NULL, "empty list with non NULL initial data pointer");		\
+			MY_ASSERT(list -> seek == NULL, "empty list with non NULL seek data pointer");			\
+																									\
+			node -> next = node;																	\
+			node -> prev = node;																	\
+																									\
+			list -> first = node;																	\
+			list -> seek = node;																	\
+																									\
+			list -> len ++;																			\
+		}																							\
+		else																						\
+		{																							\
+			MY_ASSERT(list -> first != NULL, "non empty list with NULL initial data pointer");		\
+			MY_ASSERT(list -> seek != NULL, "non empty list with NULL seek data pointer");			\
+																									\
+				MCR_COMMENT(the order is extremely important)										\
+																									\
+			((list -> seek) -> next) -> prev = node;												\
+			node -> next = (list -> seek) -> next;													\
+			node -> prev = list -> seek;															\
+			(list -> seek) -> next = node;															\
+			list -> seek = node;																	\
+																									\
+			list -> len ++;																			\
+		}																							\
+	}																								
+
+MCR_itr_mpz_insert(itr_mpz_insert,		mpz_t,				mpz_set);
+MCR_itr_mpz_insert(itr_mpz_insert_ui,	unsigned long int,	mpz_set_ui);
+MCR_itr_mpz_insert(itr_mpz_insert_si,	signed long int,	mpz_set_si);
+
 /* Create a node between the one currently pointed by
  * seek and the next one. Set seek to point to the
  * newly generated node
