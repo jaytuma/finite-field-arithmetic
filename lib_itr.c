@@ -1,34 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <gmp.h>
-#include <string.h>
-#include "macro.h"
-
-/* - - - iterable object - - - */
-/* A circular list doubly linked with starting point and
- * a moving reading position. circularity make 4 pointer
- * more usefull and lets us get rid of the "ending" pointer.
- * Append therefore becomes a prepend to the first element.
- */
-
-typedef struct _itr_node_mpz_t
-{
-	int key; //this is an extra-field useful for polynomial
-	
-	struct _itr_node_mpz_t *prev;
-	struct _itr_node_mpz_t *next;
-	
-	mpz_t data;
-} *itr_node_mpz_t;
-
-typedef struct _itr_mpz_t
-{
-	int len;
-	
-	itr_node_mpz_t first;
-	itr_node_mpz_t seek;
-	
-} *itr_mpz_t;
+#include "lib_itr.h"
 
 void itr_node_mpz_init(itr_node_mpz_t* node_pt)
 {
@@ -404,55 +374,12 @@ void itr_mpz_string(char* out, itr_mpz_t list)
  *	allocated before
  */
 
-int main()
-{
-	char str[65536];
-	itr_mpz_t list;
-	itr_mpz_init(&list);
-	
-	mpz_t tmp;
-	mpz_init(tmp);
-	
-	int i;
-	for(i = 0; i < 10; i++)
-	{
-		mpz_set_ui(tmp, 0);
-		itr_mpz_insert(list, 0, tmp);
-		
-		mpz_set_ui(tmp, i*i);
-		itr_mpz_set_si(list, -i*i*i);
-		
-		itr_mpz_string(str, list);
-		printf("list_append = %s\n\n", str);
-	}
-	
-	for(i = 0; i < 0; i++)
-	{
-		mpz_set_ui(tmp, 10+i);
-		itr_mpz_insert(list, 0, tmp);
-		itr_mpz_string(str, list);
-		printf("list_insert = %s\n\n", str);
-	}
-	
-	for(i = 0; i < 0; i++)
-	{
-		itr_mpz_next(list);
-		itr_mpz_string(str, list);
-		printf("list_next   = %s\n\n", str);
-	}
-	
-	for(i = 0; i < 0; i++)
-	{
-		itr_mpz_pop(list);
-		itr_mpz_string(str, list);
-		printf("list_pop    = %s\n\n", str);
-	}
-	
-	
-	mpz_clear(tmp);
-	itr_mpz_clear(&list);
-}
+	// - - Debug Use Only - -
 
+int _itr_mpz_typecheck(itr_mpz_t list)
+{
+	return 1;	
+}
 
 
 
