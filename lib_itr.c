@@ -95,6 +95,9 @@ void itr_mpz_next(itr_mpz_t list)
 			  (list -> len == 0 && list -> seek == NULL),
 			  "in iter_mpz object, seek and len disagree");
 	
+	/* TODO: for efficiency is probably better to assume that 
+	 * is only used when the len is non zero
+	 */
 	if(list -> len != 0)
 	{
 		(list -> seek) = (list -> seek) -> next;	
@@ -266,26 +269,33 @@ void itr_mpz_insert(itr_mpz_t list, int key, mpz_t num)
 
 void itr_mpz_pop(itr_mpz_t list)
 {
-	if(list -> len > 0)
+	MY_ASSERT(list -> len > 0, "performing pop on empty list iterator");
+	MY_ASSERT(list -> seek != NULL, "non empty list with NULL seek data pointer");
+	MY_ASSERT(list -> first != NULL, "non empty list with NULL first data pointer");
+
+	itr_node_mpz_t node;
+	node = list -> seek;
+
+	(node -> prev) -> next = node -> next;
+	(node -> next) -> prev = node -> prev;
+
+	if(list -> len > 1)
 	{
-		MY_ASSERT(list -> seek != NULL, "non empty list with NULL seek data pointer");
-		MY_ASSERT(list -> first != NULL, "non empty list with NULL first data pointer");
-		
-		itr_node_mpz_t node;
-		node = list -> seek;
-		
-		(node -> prev) -> next = node -> next;
-		(node -> next) -> prev = node -> prev;
 		list -> seek = node -> next;
-		
-		if(list -> first == node)
-		{
-			list -> first = node -> next;	
-		}
-		
-		list -> len --;
-		itr_node_mpz_clear(&node);
 	}
+	else
+	{
+		list -> seek = NULL;
+		list -> first = NULL;
+	}
+
+	if(list -> first == node)
+	{
+		list -> first = node -> next;	
+	}
+
+	list -> len --;
+	itr_node_mpz_clear(&node);
 }
 /* Remove the node currently pointed by seek and move
  * the seek pointer to the next node
@@ -338,15 +348,26 @@ void itr_mpz_string(char* out, itr_mpz_t list)
 	int i;
 	if(list -> len > 0)
 	{
-		itr_node_mpz_string(out, node);
-		node = node -> next;
 		
-		for(i = 0; i < (list -> len) - 1; i++)
-		{
+		for(i = 0; i < (list -> len); i++)
+		{	
 			itr_node_mpz_string(str, node);
 			
-			strcat(out, "->");
-			strcat(out, str);
+			if(node == (list -> seek))
+			{
+				strcat(out, "\e[1;4m");
+				strcat(out, str);
+				strcat(out, "\e[0m");
+			}
+			else
+			{
+				strcat(out, str);	
+			}
+			
+			if(i != (list -> len) - 1)
+			{
+				strcat(out, "->");
+			}
 			
 			node = node -> next;
 		}
@@ -369,38 +390,43 @@ int main()
 	itr_mpz_t list;
 	itr_mpz_init(&list);
 	
-	mpz_t tmp;itr_mpz_string(str, list);
-	printf("list = %s\n", str);
+	mpz_t tmp;
 	mpz_init(tmp);
 	
 	int i;
-	for(i = 0; i < 6; i++)
+	for(i = 0; i < 5; i++)
 	{
-		mpz_set_ui(tmp, i*i);
-		itr_mpz_insert(list, 1, tmp);
+		mpz_set_ui(tmp, i);
+		itr_mpz_append(list, 0, tmp);
+		itr_mpz_string(str, list);
+		printf("list_append = %s\n\n", str);
 	}
 	
-	//itr_mpz_restart(list);
+	for(i = 0; i < 5; i++)
+	{
+		mpz_set_ui(tmp, 10+i);
+		itr_mpz_insert(list, 0, tmp);
+		itr_mpz_string(str, list);
+		printf("list_insert = %s\n\n", str);
+	}
 	
-	for(i = 0; i < 20; i++)
+	for(i = 0; i < 15; i++)
 	{
 		itr_mpz_next(list);
+		itr_mpz_string(str, list);
+		printf("list_next   = %s\n\n", str);
 	}
 	
-	for(i = 0; i < 10; i++)
+	for(i = 0; i < 11; i++)
 	{
-		itr_mpz_prev(list);	
+		itr_mpz_pop(list);
+		itr_mpz_string(str, list);
+		printf("list_pop    = %s\n\n", str);
 	}
 	
-	itr_mpz_string(str, list);
-	printf("list = %s\n", str);
 	
-	itr_mpz_get(tmp, list);
-	gmp_printf("il primo elemento vale %Zd\n\n", tmp);
-	
-	printf("len = %d\n", list -> len);
+	mpz_clear(tmp);
 	itr_mpz_clear(&list);
-	printf("Everything is fine\n");
 }
 
 
