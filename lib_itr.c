@@ -159,14 +159,20 @@ void itr_mpz_get_key(int* key_pt, itr_mpz_t list)
  *	WARNING: requires non-empty iterator
  */
 
-void itr_mpz_set(itr_mpz_t list, mpz_t num)
-{
-	MY_ASSERT(list -> len > 0, "trying to set data of an empty list");
-	MY_ASSERT(list -> first != NULL, "trying to set data of a list with NULL initial data pointer");
-	MY_ASSERT(list -> seek != NULL, "trying to set data of a list with NULL seek data pointer");
-	
-	mpz_set((list -> seek) -> data, num);
-}
+#define MCR_itr_mpz_set(MCR_func_name, MCR_type, MCR_mpz_set)													\
+	void MCR_func_name(itr_mpz_t list, MCR_type num)															\
+	{																											\
+		MY_ASSERT(list -> len > 0, "trying to set data of an empty list");										\
+		MY_ASSERT(list -> first != NULL, "trying to set data of a list with NULL initial data pointer");		\
+		MY_ASSERT(list -> seek != NULL, "trying to set data of a list with NULL seek data pointer");			\
+																												\
+		MCR_mpz_set((list -> seek) -> data, num);																	\
+	}
+
+MCR_itr_mpz_set(itr_mpz_set,	mpz_t,				mpz_set);
+MCR_itr_mpz_set(itr_mpz_set_ui,	unsigned long int,	mpz_set_ui);
+MCR_itr_mpz_set(itr_mpz_set_si,	signed long int,	mpz_set_si);
+
 /* set the value of the node currently pointed by
  * seek equal to num.
  *
@@ -394,15 +400,19 @@ int main()
 	mpz_init(tmp);
 	
 	int i;
-	for(i = 0; i < 5; i++)
+	for(i = 0; i < 10; i++)
 	{
-		mpz_set_ui(tmp, i);
-		itr_mpz_append(list, 0, tmp);
+		mpz_set_ui(tmp, 0);
+		itr_mpz_insert(list, 0, tmp);
+		
+		mpz_set_ui(tmp, i*i);
+		itr_mpz_set_si(list, -i*i*i);
+		
 		itr_mpz_string(str, list);
 		printf("list_append = %s\n\n", str);
 	}
 	
-	for(i = 0; i < 5; i++)
+	for(i = 0; i < 0; i++)
 	{
 		mpz_set_ui(tmp, 10+i);
 		itr_mpz_insert(list, 0, tmp);
@@ -410,14 +420,14 @@ int main()
 		printf("list_insert = %s\n\n", str);
 	}
 	
-	for(i = 0; i < 15; i++)
+	for(i = 0; i < 0; i++)
 	{
 		itr_mpz_next(list);
 		itr_mpz_string(str, list);
 		printf("list_next   = %s\n\n", str);
 	}
 	
-	for(i = 0; i < 11; i++)
+	for(i = 0; i < 0; i++)
 	{
 		itr_mpz_pop(list);
 		itr_mpz_string(str, list);
