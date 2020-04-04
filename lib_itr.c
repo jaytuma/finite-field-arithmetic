@@ -1,4 +1,28 @@
+/*#include <stdio.h>
+#include <stdlib.h>
+#include <gmp.h>
+#include <string.h>
+#include "macro.h"*/
 #include "lib_itr.h"
+
+/*typedef struct _itr_node_mpz_t
+{
+	int key; //this is an extra-field useful for polynomial
+	
+	struct _itr_node_mpz_t *prev;
+	struct _itr_node_mpz_t *next;
+	
+	mpz_t data;
+} *itr_node_mpz_t;
+
+typedef struct _itr_mpz_t
+{
+	int len;
+	
+	itr_node_mpz_t first;
+	itr_node_mpz_t seek;
+	
+} *itr_mpz_t;*/
 
 void itr_node_mpz_init(itr_node_mpz_t* node_pt)
 {
@@ -139,9 +163,9 @@ void itr_mpz_get_key(int* key_pt, itr_mpz_t list)
 		MCR_mpz_set((list -> seek) -> data, num);																\
 	}
 
-MCR_itr_mpz_set(itr_mpz_set,	mpz_t,				mpz_set);
-MCR_itr_mpz_set(itr_mpz_set_ui,	unsigned long int,	mpz_set_ui);
-MCR_itr_mpz_set(itr_mpz_set_si,	signed long int,	mpz_set_si);
+MCR_itr_mpz_set(itr_mpz_set,	mpz_t,				mpz_set)
+MCR_itr_mpz_set(itr_mpz_set_ui,	unsigned long int,	mpz_set_ui)
+MCR_itr_mpz_set(itr_mpz_set_si,	signed long int,	mpz_set_si)
 
 /* set the value of the node currently pointed by
  * seek equal to num.
@@ -201,9 +225,9 @@ void itr_mpz_set_key(itr_mpz_t list, int new_key)
 		}																						\
 	}
 
-MCR_itr_mpz_append(itr_mpz_append,		mpz_t,				mpz_set);
-MCR_itr_mpz_append(itr_mpz_append_ui,	unsigned long int,	mpz_set_ui);
-MCR_itr_mpz_append(itr_mpz_append_si,	signed long int,	mpz_set_si);
+MCR_itr_mpz_append(itr_mpz_append,		mpz_t,				mpz_set)
+MCR_itr_mpz_append(itr_mpz_append_ui,	unsigned long int,	mpz_set_ui)
+MCR_itr_mpz_append(itr_mpz_append_si,	signed long int,	mpz_set_si)
 
 /* Create a node at the end of the iterator's list
  * i.e. before the first element with given key and value
@@ -381,6 +405,11 @@ int _itr_mpz_typecheck(itr_mpz_t list)
 	return 1;	
 }
 
+
+int main()
+{
+	return 0;	
+}
 
 
 

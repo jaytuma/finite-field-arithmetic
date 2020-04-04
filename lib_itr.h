@@ -59,15 +59,15 @@ void itr_mpz_set_si(itr_mpz_t list, signed long int num);
 void itr_mpz_set_key(itr_mpz_t list, int new_key);
 
 	/*from Macro Expansion*/
-void itr_mpz_append(itr_mpz_t list,	mpz_t num);
-void itr_mpz_append_ui(itr_mpz_t list, unsigned long int num);
-void itr_mpz_append_si(itr_mpz_t list, signed long int num);
+void itr_mpz_append(itr_mpz_t list,	int key, mpz_t num);
+void itr_mpz_append_ui(itr_mpz_t list, int key, unsigned long int num);
+void itr_mpz_append_si(itr_mpz_t list, int key, signed long int num);
 	/*- - - - - - - - - - */									
 	
 	/*from Macro Expansion*/
-void itr_mpz_insert(itr_mpz_t list,	mpz_t num);
-void itr_mpz_insert_ui(itr_mpz_t list, unsigned long int num);
-void itr_mpz_insert_si(itr_mpz_t list, signed long int num);
+void itr_mpz_insert(itr_mpz_t list,	int key, mpz_t num);
+void itr_mpz_insert_ui(itr_mpz_t list, int key, unsigned long int num);
+void itr_mpz_insert_si(itr_mpz_t list, int key, signed long int num);
 	/* - - - - - - - - - -*/
 
 void itr_mpz_pop(itr_mpz_t list);
@@ -97,7 +97,7 @@ void itr_mpz_string(char* out, itr_mpz_t list);
 #define itr_mpz_access(MCR_list)								\
 	((_itr_mpz_typecheck(MCR_list)) ? ((MCR_list -> seek) -> data) : (0))
 #else
-#define itr_mpz_len(MCR_list)									\
+#define itr_mpz_access(MCR_list)								\
 	((MCR_list -> seek) -> data)
 #endif
 /* give access to the data pointed by seek without the need
