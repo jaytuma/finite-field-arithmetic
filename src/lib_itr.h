@@ -80,6 +80,12 @@ void itr_node_mpz_string(char* out, itr_node_mpz_t node);
 
 void itr_mpz_string(char* out, itr_mpz_t list);
 
+void itr_mpz_print(itr_mpz_t list);
+
+	//debug function
+
+int _itr_mpz_typecheck(itr_mpz_t list);
+
 	// - - - - M a c r o z - - - - //
 
 #ifdef DEBUG

@@ -1,28 +1,4 @@
-/*#include <stdio.h>
-#include <stdlib.h>
-#include <gmp.h>
-#include <string.h>
-#include "macro.h"*/
 #include "lib_itr.h"
-
-/*typedef struct _itr_node_mpz_t
-{
-	int key; //this is an extra-field useful for polynomial
-	
-	struct _itr_node_mpz_t *prev;
-	struct _itr_node_mpz_t *next;
-	
-	mpz_t data;
-} *itr_node_mpz_t;
-
-typedef struct _itr_mpz_t
-{
-	int len;
-	
-	itr_node_mpz_t first;
-	itr_node_mpz_t seek;
-	
-} *itr_mpz_t;*/
 
 void itr_node_mpz_init(itr_node_mpz_t* node_pt)
 {
@@ -323,6 +299,8 @@ void itr_mpz_reverse(itr_mpz_t list)
 		MY_ASSERT(list -> first != NULL, "non empty list with NULL first data pointer");
 		
 		itr_node_mpz_t node, tmp;
+		node = list -> first;
+		
 		int i;
 		for(i = 0; i < list -> len; i++)
 		{
@@ -397,6 +375,13 @@ void itr_mpz_string(char* out, itr_mpz_t list)
  *	WARNING: requires that enough memory for out is
  *	allocated before
  */
+
+void itr_mpz_print(itr_mpz_t list)
+{
+	char str[65536];
+	itr_mpz_string(str, list);
+	printf("list = %s\nlen = %d\n", str, list -> len);
+}
 
 	// - - Debug Use Only - -
 
