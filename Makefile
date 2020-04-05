@@ -1,32 +1,79 @@
 # -*- makefile -*-
 CONFIG_FILE = ./Makefile.config
-OBJ_PATH = ./objects/
+DEPEND_FILE = ./Makefile.deps
 
- -include $(CONFIG_FILE)
+-include $(CONFIG_FILE)
 
-all: test_vec.exe lib_itr.exe
+#I expect the following variables from the config file
+#
+#	OBJ_PATH 	- path of the object file
+#	SRC_PATH 	- path of the source code (.c/.h/.s files)
+#	TEST_PATH 	- path of the source code for testing
+#	TIME_PATH	- path of the source code for timing
+#	EXEC_PATH	- path of the executables
+#
+#	LIBS		- libraries to link
 
-lib_itr.exe: $(OBJ_PATH)lib_itr.o
-	gcc $(OBJ_PATH)lib_itr.o -o lib_itr.exe $(LIB)
+#list of all the programs that create executables without extension
+PROG_BN = $(basename $(wildcard $(TEST_PATH)*.c) $(wildcard $(TIME_PATH)*.c))
+PROG_O_TMP = $(subst $(TEST_PATH),$(OBJ_PATH),$(PROG_BN))
+PROG_O = $(addsuffix .o,$(subst $(TIME_PATH),$(OBJ_PATH),$(PROG_O_TMP)))
 
-$(OBJ_PATH)lib_itr.o: lib_itr.c
-	gcc -c $(LIB) lib_itr.c -o $(OBJ_PATH)lib_itr.o
+#list of all the file that contain source code (without extension)	
+SRC_BN = $(basename $(wildcard $(SRC_PATH)*.c))
+SRC_O  = $(addsuffix .o,$(subst $(SRC_PATH),$(OBJ_PATH),$(SRC_BN)))
 
-test_vec.exe: $(OBJ_PATH)lib_vec.o $(OBJ_PATH)test_vec.o
-	gcc $(OBJ_PATH)lib_vec.o $(OBJ_PATH)test_vec.o -o test_vec.exe $(LIB)
+#list of all executable to produce
+EXEC_BN_TMP = $(subst $(TEST_PATH),$(EXEC_PATH),$(PROG_BN))
+EXEC_BN = $(subst $(TIME_PATH),$(EXEC_PATH),$(EXEC_BN_TMP))
 
-$(OBJ_PATH)test_vec.o: lib_vec.o lib_vec.h test_vec.c test_vec.h
-	gcc -c $(LIB) test_vec.c -o $(OBJ_PATH)test_vec.o
-
-$(OBJ_PATH)lib_vec.o: lib_vec.c lib_vec.h macro.h
-	gcc -c $(LIB) lib_vec.c -o $(OBJ_PATH)lib_vec.o
-
-*.c:
-
-lib_vec.h:
+EXEC_EXTENSION =.exe
 
 
-test_vec.h:
+CC = gcc #compiler
+LD = gcc #linker
+
+	#flag for the compiler
+CFLAG += $(LIBS)	#add libraries to link
+
+	#flag for the linker
+LDFLAG += $(LIBS)
+
+	
+	# - - recipes - - #
 
 
-macro.h:
+all: $(addsuffix $(EXEC_EXTENSION),$(EXEC_BN))								#check all the executable that need to be done
+
+$(EXEC_PATH)%$(EXEC_EXTENSION): $(SRC_O) $(OBJ_PATH)%.o
+	$(LD) $(SRC_O) $(OBJ_PATH)$*.o -o $@ $(LDFLAG)
+	
+#in order to keep the object files alive
+.PRECIOUS: $(SRC_O) $(PROG_O)
+	
+clean:
+	rm -f $(OBJ_PATH)* $(EXEC_PATH)* $(DEPEND_FILE)
+
+depend:
+	rm -f $(DEPEND_FILE)												
+	for i in $(addsuffix .c, $(PROG_BN) $(SRC_BN));\
+	do $(CC) -MM "$${i}";\
+	done > $(DEPEND_FILE)
+	sed -i 's/^/$(subst /,\/,$(OBJ_PATH))/' $(DEPEND_FILE)
+	sed -i '/^.*/a __TAB_CHAR__$$(CC) -c $$(CFLAG) $$< -o $$@\n' $(DEPEND_FILE)
+	sed -i 's/__TAB_CHAR__/	/' $(DEPEND_FILE)
+
+-include $(DEPEND_FILE)
+	
+
+
+
+
+
+
+
+
+
+
+
+

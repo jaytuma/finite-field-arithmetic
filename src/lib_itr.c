@@ -406,12 +406,6 @@ int _itr_mpz_typecheck(itr_mpz_t list)
 }
 
 
-int main()
-{
-	return 0;	
-}
-
-
 
 
 

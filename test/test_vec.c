@@ -1,5 +1,5 @@
 #include <time.h>
-#include "lib_vec.h"
+#include "../src/lib_vec.h"
 
 
 /*macro to handle testing*/

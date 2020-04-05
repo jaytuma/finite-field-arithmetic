@@ -1,0 +1,9 @@
+bin/test_vec.o: test/test_vec.c test/../src/lib_vec.h test/../src/macro.h
+	$(CC) -c $(CFLAG) $< -o $@
+
+bin/lib_itr.o: src/lib_itr.c src/lib_itr.h src/macro.h
+	$(CC) -c $(CFLAG) $< -o $@
+
+bin/lib_vec.o: src/lib_vec.c src/lib_vec.h src/macro.h
+	$(CC) -c $(CFLAG) $< -o $@
+
