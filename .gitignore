@@ -1,3 +1,4 @@
+*.deps
 git_ssh*
 
 *.o 
