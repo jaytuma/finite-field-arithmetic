@@ -48,7 +48,7 @@ do																			\
 																			\
 	if(MCR_test_and_arguments)												\
 	{																		\
-		fprintf(MCR_fileout, "\b\b\b\b\b\b\e[1;32mSucces\e[0m\n");			\
+		fprintf(MCR_fileout, "\b\b\b\b\b\b\e[1;32mPassed\e[0m\n");			\
 		fflush(MCR_fileout);												\
 	}																		\
 	else																	\
