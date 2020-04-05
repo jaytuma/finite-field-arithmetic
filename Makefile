@@ -67,7 +67,7 @@ depend:
 	done > $(DEPEND_FILE)
 	@cat $(DEPEND_FILE)
 	tr '\n' '$(TR_CHAR)' < $(DEPEND_FILE) > $(DEPEND_FILE)__tmp__
-	sed -i 's/\\$(TR_CHAR)//' $(DEPEND_FILE)__tmp__
+	sed -i 's/\\$(TR_CHAR)//g' $(DEPEND_FILE)__tmp__
 	tr '$(TR_CHAR)' '\n' < $(DEPEND_FILE)__tmp__ > $(DEPEND_FILE)
 	rm $(DEPEND_FILE)__tmp__
 	sed -i 's/^/$(subst /,\/,$(OBJ_PATH))/' $(DEPEND_FILE)
