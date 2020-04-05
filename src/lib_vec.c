@@ -2,6 +2,7 @@
 
 // - - vector data structure - - //
 /* holds a dynamically allocated vector of mpz
+ */
 
 /* the data structure need to be initialized through a pointer
  * from that moment on the vector is a pointer to _vec_t and 
@@ -207,7 +208,7 @@ int vec_mpz_index(vec_mpz_t vec, mpz_t num)
 void vec_mpz_reverse(vec_mpz_t vec)
 {
 	int i, n = vec -> len;
-	for(i = 0; i < n/2; i++);
+	for(i = 0; i < n/2; i++)
 	{
 		mpz_swap(vec -> data[i], vec -> data[n - i - 1]);	
 	}

@@ -304,9 +304,15 @@ void itr_mpz_reverse(itr_mpz_t list)
 		int i;
 		for(i = 0; i < list -> len; i++)
 		{
+			//swap next and prev
 			tmp = node -> next;
 			node -> next = node -> prev;
 			node -> prev = tmp;
+			
+			/* move to the next node (that i know, is the pevious actually
+			 * which means we are just walking the cycle in reverse order
+			 */
+			node = node -> next;
 		}
 	}
 }

@@ -87,7 +87,7 @@ int _int_typecheck(int i);
 	/*vec_mpz_access(vec_mpz_t, int) - with type check*/
 #ifdef DEBUG
 #define vec_mpz_access(MCR_vec, MCR_i)															\
-	((_vec_mpz_typecheck(MCR_vec) * _int_typecheck(MCR_i)) ? (MCR_vec -> data[MCR_i]) : (0))	
+	((_vec_mpz_typecheck(MCR_vec) && _int_typecheck(MCR_i)) ? (MCR_vec -> data[MCR_i]) : (0))	
 #else
 #define vec_mpz_access(MCR_vec, MCR_i)															\
 	(MCR_vec -> data[MCR_i])
@@ -97,8 +97,3 @@ int _int_typecheck(int i);
  *		is to access elements when they are needed as argument of
  *		a function without the need to copy them first.
  */
-
-
-
-
-

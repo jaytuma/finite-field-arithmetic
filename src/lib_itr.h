@@ -89,10 +89,10 @@ int _itr_mpz_typecheck(itr_mpz_t list);
 	// - - - - M a c r o z - - - - //
 
 #ifdef DEBUG
-#define itr_mpz_len(MCR_list)									\
+#define itr_mpz_len(MCR_list)											\
 	((_itr_mpz_typecheck(MCR_list)) ? (MCR_list -> len) : (0))
 #else
-#define itr_mpz_len(MCR_list)									\
+#define itr_mpz_len(MCR_list)											\
 	(MCR_list -> len)
 #endif
 /* return the lenght of a iterator list. with compiler-time
@@ -100,10 +100,10 @@ int _itr_mpz_typecheck(itr_mpz_t list);
  */
 
 #ifdef DEBUG
-#define itr_mpz_access(MCR_list)								\
+#define itr_mpz_access(MCR_list)										\
 	((_itr_mpz_typecheck(MCR_list)) ? ((MCR_list -> seek) -> data) : (0))
 #else
-#define itr_mpz_access(MCR_list)								\
+#define itr_mpz_access(MCR_list)										\
 	((MCR_list -> seek) -> data)
 #endif
 /* give access to the data pointed by seek without the need
@@ -111,8 +111,14 @@ int _itr_mpz_typecheck(itr_mpz_t list);
  * passing the currently pointed value as a function argument)
  */
 
-
-
-
-
-
+#ifdef DEBUG
+#define itr_mpz_access_key(MCR_list)									\
+	((_itr_mpz_typecheck(MCR_list)) ? ((MCR_list -> seek) -> key) : (0))	
+#else
+#define itr_mpz_access_key(MCR_list)										\
+	((MCR_list -> seek) -> key)											
+#endif
+/* give access to the key of the node pointed by the seek pointer.
+ * here because *_get_key is implicit (as nearly everything should be)
+ * but is alway good to give direct access.
+ */
