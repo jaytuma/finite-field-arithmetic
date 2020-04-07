@@ -269,8 +269,6 @@ int main()
 	itr_mpz_t list;
 	itr_mpz_init(&list);
 
-	__itr_mpz_range(list, 100);
-	itr_mpz_print(list);
 	
 	MCR_test_iteration_display(__itr_mpz_random_walk(12000), 100,
 							   "random walk test:", "", stdout);

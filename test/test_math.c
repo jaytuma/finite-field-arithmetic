@@ -34,6 +34,6 @@ int __test_min_max()
 
 int main()
 {
-	MCR_test_iteration_display(__test_min_max(), 1000000,
-							   "min/max test:", "", stdout);
+	MCR_test_iteration_display(__test_min_max(), 500000,
+							   "min/max test:\t", "", stdout);
 }
