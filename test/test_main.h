@@ -1,4 +1,5 @@
 /*macro to handle testing*/
+#include "../ffa.h"
 
 #define MCR_test_iteration_display(MCR_test_and_arguments, MCR_iter_num, MCR_testname_str, MCR_error_str, MCR_fileout)\
 do																			\
