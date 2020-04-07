@@ -443,11 +443,7 @@ int _itr_mpz_typecheck(itr_mpz_t list)
 	return 1;	
 }
 
-
-
-
-
-
-
-
-
+int _itr_is_reset(itr_mpz_t list)
+{
+	return (list -> first) == (list -> seek);
+}

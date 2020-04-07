@@ -89,6 +89,8 @@ void itr_mpz_print(itr_mpz_t list);
 
 int _itr_mpz_typecheck(itr_mpz_t list);
 
+int _itr_is_reset(itr_mpz_t list);
+
 	// - - - - M a c r o z - - - - //
 
 #ifdef DEBUG
