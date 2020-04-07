@@ -324,6 +324,16 @@ void itr_mpz_reverse(itr_mpz_t list)
  */
 
 	//IO function
+
+int itr_node_mpz_string_len(itr_node_mpz_t node)
+{
+	//2 brakets, 2 comma and space, 1 possible minus sign, 1 null char, 10 (upper bound of the int)
+	return 16 + mpz_sizeinbase(node -> data, 10);
+}
+/* returns an upper bound of the char-len of the string 
+ * representation of a node, null char included
+ */
+
 void itr_node_mpz_string(char* out, itr_node_mpz_t node)
 {
 	gmp_sprintf(out, "(%d, %Zd)", node -> key, node -> data);
@@ -334,10 +344,32 @@ void itr_node_mpz_string(char* out, itr_node_mpz_t node)
  *	allocated before
  */
 
+int itr_mpz_string_len(itr_mpz_t list)
+{
+	int out = 1; //null char
+	int i;
+
+	itr_node_mpz_t node;
+	node = list -> first;
+
+	for(i = 0; i < itr_mpz_len(list); i++)
+	{
+		out += itr_node_mpz_string_len(node);
+		node = node -> next;
+	}
+
+	//adding space for arrows sign
+	out += 2*(itr_mpz_len(list) - 1);
+	return out;
+}
+
 void itr_mpz_string(char* out, itr_mpz_t list)
 {
 	//this function should not move the seek
-	char str[1024];
+	int str_size = 64;
+	int str_req_size;
+	char* str = malloc(sizeof(char) * str_size);
+	str[0] = '\0';
 	out[0] = '\0';
 	
 	itr_node_mpz_t node;
@@ -346,11 +378,22 @@ void itr_mpz_string(char* out, itr_mpz_t list)
 	int i;
 	if(list -> len > 0)
 	{
-		
 		for(i = 0; i < (list -> len); i++)
-		{	
+		{
+			//checking for string len
+			str_req_size = itr_node_mpz_string_len(node);
+			if(str_req_size > str_size)
+			{
+				str_size = str_req_size;
+				free(str);
+				str = (char *) malloc(sizeof(char) * str_size);
+			}
+
+			//get the string
+
 			itr_node_mpz_string(str, node);
 			
+			//highlight the node if pointed by seek
 			if(node == (list -> seek))
 			{
 				strcat(out, "\e[1;4m");
@@ -362,11 +405,13 @@ void itr_mpz_string(char* out, itr_mpz_t list)
 				strcat(out, str);	
 			}
 			
+			//adding arrow sign
 			if(i != (list -> len) - 1)
 			{
 				strcat(out, "->");
 			}
 			
+			//moving forward
 			node = node -> next;
 		}
 	}
@@ -374,6 +419,7 @@ void itr_mpz_string(char* out, itr_mpz_t list)
 	{
 		strcpy(out, "()");	
 	}
+	free(str);
 }
 /* writes in out a string representing the given
  * iterator list
@@ -384,9 +430,10 @@ void itr_mpz_string(char* out, itr_mpz_t list)
 
 void itr_mpz_print(itr_mpz_t list)
 {
-	char str[65536];
+	char* str = (char *) malloc(sizeof(char) * itr_mpz_string_len(list));
 	itr_mpz_string(str, list);
 	printf("list = %s\nlen = %d\n", str, list -> len);
+	free(str);
 }
 
 	// - - Debug Use Only - -

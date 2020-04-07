@@ -27,7 +27,6 @@ typedef struct _itr_mpz_t
 	
 	itr_node_mpz_t first;
 	itr_node_mpz_t seek;
-	
 } *itr_mpz_t;
 
 void itr_node_mpz_init(itr_node_mpz_t* node_pt);
@@ -74,9 +73,13 @@ void itr_mpz_pop(itr_mpz_t list);
 
 void itr_mpz_reverse(itr_mpz_t list);
 
-	//IO function
+	/*IO function*/
+
+int itr_node_mpz_string_len(itr_node_mpz_t node);
 
 void itr_node_mpz_string(char* out, itr_node_mpz_t node);
+
+int itr_mpz_string_len(itr_mpz_t list);
 
 void itr_mpz_string(char* out, itr_mpz_t list);
 
