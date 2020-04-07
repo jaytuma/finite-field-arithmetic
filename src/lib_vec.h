@@ -54,6 +54,7 @@ int vec_mpz_index(vec_mpz_t vec, mpz_t num);
 void vec_mpz_reverse(vec_mpz_t vec);
 
 	//IO function
+int vec_mpz_string_len(vec_mpz_t vec);
 
 void vec_mpz_string(char* out, vec_mpz_t vec);
 

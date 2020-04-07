@@ -218,40 +218,80 @@ void vec_mpz_reverse(vec_mpz_t vec)
 
 	// - - - I/O - - - 
 
+int vec_mpz_string_len(vec_mpz_t vec)
+{
+	if(vec -> len == 0)
+	{
+		return 3;
+	}
+	else
+	{
+		int out = 3, i = 0; //adding two brakets and one terminal char
+		for(i = 0; i < vec_mpz_len(vec); i++)
+		{
+			out += mpz_sizeinbase(vec_mpz_access(vec, i), 10);
+
+			if(mpz_sgn(vec_mpz_access(vec, i)) < 0)
+			{
+				out += 1; //adding space for the negative sign
+			}
+		}
+
+		out += 2*(vec_mpz_len(vec) - 1); //adding space for commas and spaces
+		return out;
+	}
+}
+/* returns the bit-lenght of the string representation of
+ * a vector. Considerds the null terminatr char too
+ */
+
 void vec_mpz_string(char* out, vec_mpz_t vec)
 {
-	int i;
-	mpz_t tmp;
-	mpz_init(tmp);
-	char str[1024];
+	int i = 0;
+	int str_size = 64;
+	char* str = malloc(sizeof(char) * str_size);
+	int str_req_size;
 	
 	out[0] = '[';
 	out[1] = '\0';
 
 	if(vec -> len > 0)
 	{
-		//first element
-		vec_mpz_get(tmp, vec, 0);
-		gmp_sprintf(str, "%Zd", tmp);
-		strcat(out, str);
-		
-		for(i = 1; i < (vec -> len); i++)
+		for(i = 0; i < (vec -> len); i++)
 		{
-			vec_mpz_get(tmp, vec, i);
-			gmp_sprintf(str, ", %Zd", tmp);
+			//size check for str
+			str_req_size = 2 + mpz_sizeinbase(vec_mpz_access(vec, i), 10); //1 sign, 1 null char
+			if(str_req_size > str_size)
+			{
+				free(str);
+				str_size = str_req_size;
+
+
+				str = (char *) malloc(sizeof(char) * str_size);
+			}
+
+			//insertion of the new element
+			gmp_sprintf(str, "%Zd", vec_mpz_access(vec, i));
 			strcat(out, str);
+
+			//insertion of the comma
+			if(i < (vec -> len) - 1)
+			{
+				strcat(out, ", ");
+			}
 		}
 	}
 	
 	strcat(out, "]");
-	mpz_clear(tmp);
+	free(str);
 }
 
 void vec_mpz_print(vec_mpz_t vec)
 {
-	char str[65536];
+	char* str = (char *) malloc( sizeof(char) * vec_mpz_string_len(vec) );
 	vec_mpz_string(str, vec);
 	printf("vec = %s\nlen = %d,\tsize = %d\n\n", str, vec -> len, vec -> size);
+	free(str);
 }
 
 // - - - debug use only - - - (not sure if this should stay here...)

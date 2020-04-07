@@ -169,14 +169,10 @@ int __vec_mpz_cnt(int len)
  */ 
 
 
-/* test the creation and destruction of long vector
- */
-
-
 int main()
 {
 	srand(time(0));
-	
+
 	MCR_test_iteration_display(__vec_mpz_pag(5000), 100,\
 							   "pop/append/get test:", "", stdout);
 
@@ -188,8 +184,6 @@ int main()
 	
 	MCR_test_oneshot_display(__vec_mpz_osia(500000), \
 							   "generic ins/app test:", "", stdout);
-	
-	
 	
 }
 
